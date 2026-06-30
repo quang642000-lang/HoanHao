@@ -611,7 +611,7 @@ function checkCustomerPhone() {
                     document.getElementById('tenKhachHang').value = '';
                     document.getElementById('tenKhachHang').readOnly = false;
                     document.getElementById('customerInfoPanel').style.display = 'none';
-                    document.getElementById('newCustomerPanel').style.display = 'block';
+                    document.getElementById('newCustomerPanel').style.setProperty('display', 'block', 'important');
                 }
                 renderCart();
             });

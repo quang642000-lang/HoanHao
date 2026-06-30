@@ -4,7 +4,6 @@ import model.KhachHang;
 import repository.IKhachHangRepository;
 import repository.impl.KhachHangRepoImpl;
 import service.IKhachHangService;
-
 import java.util.List;
 
 public class KhachHangServiceImpl implements IKhachHangService {
@@ -36,8 +35,14 @@ public class KhachHangServiceImpl implements IKhachHangService {
     public String add(KhachHang kh) {
         if (kh.getTenKH() == null || kh.getTenKH().trim().isEmpty()) return "Tên khách hàng không được để trống!";
         if (kh.getSDT() == null || !kh.getSDT().matches("\\d{10,11}")) return "Số điện thoại không hợp lệ!";
+
+        // Cú double-check để chắc chắn SĐT không bị trùng
+        if (khachHangRepo.timKiemTheoSdt(kh.getSDT()) != null) {
+            return "Số điện thoại đã tồn tại trong hệ thống!";
+        }
+
         kh.setDiemTichLuy(0);
-        return khachHangRepo.add(kh) ? "Thêm khách hàng thành công!" : "Lỗi hệ thống!";
+        return khachHangRepo.add(kh) ? "Thêm khách hàng thành công!" : "Lỗi Database! (Vui lòng kiểm tra xem bảng KHACH_HANG trong SQL Server đã có 2 cột 'email' và 'mat_khau' chưa?)";
     }
 
     @Override

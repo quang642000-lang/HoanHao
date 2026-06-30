@@ -134,8 +134,9 @@
                                 </div>
                                 <input type="hidden" name="diemSuDung" id="input_diemSuDung" value="0">
                             </div>
-                            <div id="newCustomerPanel" class="text-primary small fw-semibold mb-2 ps-1" style="display: none;">
-                                <i class="bi bi-stars"></i> Tự động tạo thẻ tích điểm cho khách mới!
+                            <div id="newCustomerPanel" class="mb-2 p-2 bg-white rounded-3 border border-primary border-opacity-50 shadow-sm" style="display: none;">
+                                <div class="text-primary small fw-bold mb-1"><i class="bi bi-stars"></i> Mở thẻ hội viên mới:</div>
+                                <input type="email" class="form-control form-control-sm fw-medium border-primary" name="emailKhachHang" id="emailKhachHang" placeholder="Email (Để nhận mã xác thực Web O2O)">
                             </div>
                             <!-- Khuyến Mãi -->
                             <div class="mb-3 bg-light p-3 rounded-3 border" style="border-color: #E2E8F0 !important;">

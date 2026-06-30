@@ -10,12 +10,14 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @WebServlet(name = "BanHangPOSController", value = "/pos")
 public class BanHangPOSController extends HttpServlet {
+
     private IDanhMucService danhMucService = new DanhMucServiceImpl();
     private ISanPhamService sanPhamService = new SanPhamServiceImpl();
     private IBienTheSanPhamService bienTheService = new BienTheSanPhamServiceImpl();
@@ -40,14 +42,15 @@ public class BanHangPOSController extends HttpServlet {
 
         List<SanPham> dsSanPham = (filterDanhMuc != null && !filterDanhMuc.isEmpty()) ?
                 sanPhamService.search("", filterDanhMuc) : sanPhamService.getAll();
-
         request.setAttribute("danhSachSanPham", dsSanPham);
+
         request.setAttribute("danhSachBienThe", bienTheService.getAll());
         request.setAttribute("danhSachTopping", toppingService.getAll());
 
         List<PhuongThucThanhToan> listPTTT = ptttService.getAll().stream()
                 .filter(pt -> pt.getTrangThai() == 1).collect(Collectors.toList());
         request.setAttribute("danhSachPTTT", listPTTT);
+
         request.setAttribute("danhSachKhuyenMai", khuyenMaiService.getAll());
 
         request.getRequestDispatcher("/views/pos/ban_hang.jsp").forward(request, response);
@@ -112,7 +115,9 @@ public class BanHangPOSController extends HttpServlet {
                 }
 
                 buildCartItems(request, dh);
-                String tb = donHangService.taoDonHangThanhToan(dh, request.getParameter("sdtKhachHang"), request.getParameter("tenKhachHang"), diemSuDung);
+
+                String emailKhach = request.getParameter("emailKhachHang");
+                String tb = donHangService.taoDonHangThanhToan(dh, request.getParameter("sdtKhachHang"), request.getParameter("tenKhachHang"), emailKhach, diemSuDung);
 
                 if (tb.contains("thành công")) {
                     request.getSession().setAttribute("recentOrder", dh);
@@ -148,14 +153,19 @@ public class BanHangPOSController extends HttpServlet {
                 String[] toppings = request.getParameterValues("toppings_" + idx + "[]");
                 if (toppings != null) {
                     for (String tpInfo : toppings) {
+                        // VÁ LỖI INDEX TẠI ĐÂY
                         String[] parts = tpInfo.split("\\|");
                         ChiTietTopping ctt = new ChiTietTopping();
                         Topping t = new Topping();
-                        t.setMaTopping(parts[0]);
-                        t.setTenTopping(parts.length > 3 ? parts[1] : "");
+
+                        t.setMaTopping(parts[8332]); // Index 0: ID Topping
+                        t.setTenTopping(parts.length > 3 ? parts[1] : ""); // Index 3: Tên Topping
                         ctt.setTopping(t);
-                        ctt.setSoLuongTp(Integer.parseInt(parts[2]) * ct.getSoLuong());
-                        ctt.setGiaChotTp(Integer.parseInt(parts[3]));
+
+                        // Index 1: Số lượng, Index 2: Giá
+                        ctt.setSoLuongTp(Integer.parseInt(parts[4]) * ct.getSoLuong());
+                        ctt.setGiaChotTp(Integer.parseInt(parts[5]));
+
                         ct.getDanhSachTopping().add(ctt);
                     }
                 }

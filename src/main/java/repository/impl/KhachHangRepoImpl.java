@@ -25,6 +25,7 @@ public class KhachHangRepoImpl implements IKhachHangRepository {
                 kh.setTenKH(rs.getString("ten_kh"));
                 kh.setSDT(rs.getString("so_dien_thoai"));
                 kh.setDiemTichLuy(rs.getInt("diem_tich_luy"));
+                kh.setEmail(rs.getString("email")); // FIX: Đọc Email
                 list.add(kh);
             }
         } catch (Exception e) { e.printStackTrace(); }
@@ -46,6 +47,7 @@ public class KhachHangRepoImpl implements IKhachHangRepository {
                     kh.setTenKH(rs.getString("ten_kh"));
                     kh.setSDT(rs.getString("so_dien_thoai"));
                     kh.setDiemTichLuy(rs.getInt("diem_tich_luy"));
+                    kh.setEmail(rs.getString("email")); // FIX: Đọc Email
                     list.add(kh);
                 }
             }
@@ -77,6 +79,10 @@ public class KhachHangRepoImpl implements IKhachHangRepository {
                     kh.setTenKH(rs.getString("ten_kh"));
                     kh.setSDT(rs.getString("so_dien_thoai"));
                     kh.setDiemTichLuy(rs.getInt("diem_tich_luy"));
+                    // FIX CHÍ MẠNG: Phải đọc Email và Mật khẩu từ Database lên
+                    kh.setEmail(rs.getString("email"));
+                    kh.setMatKhau(rs.getString("mat_khau"));
+                    kh.setHangThanhVien(rs.getString("hang_thanh_vien"));
                     return kh;
                 }
             }
@@ -86,19 +92,25 @@ public class KhachHangRepoImpl implements IKhachHangRepository {
 
     @Override
     public boolean add(KhachHang kh) {
-        String sql = "INSERT INTO KHACH_HANG (ten_kh, so_dien_thoai, diem_tich_luy) VALUES (?, ?, ?)";
+        // FIX CHÍ MẠNG: Bổ sung email và mat_khau vào câu lệnh INSERT
+        String sql = "INSERT INTO KHACH_HANG (ten_kh, so_dien_thoai, email, mat_khau, diem_tich_luy) VALUES (?, ?, ?, ?, ?)";
         try (Connection con = DBConnect.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, kh.getTenKH());
             ps.setString(2, kh.getSDT());
-            ps.setInt(3, kh.getDiemTichLuy());
+            ps.setString(3, kh.getEmail());
+            ps.setString(4, kh.getMatKhau());
+            ps.setInt(5, kh.getDiemTichLuy());
             return ps.executeUpdate() > 0;
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return false;
     }
 
     @Override
     public boolean update(KhachHang kh) {
+        // Có thể bổ sung update Email nếu nghiệp vụ yêu cầu
         String sql = "UPDATE KHACH_HANG SET ten_kh = ?, so_dien_thoai = ? WHERE ma_kh = ?";
         try (Connection con = DBConnect.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {

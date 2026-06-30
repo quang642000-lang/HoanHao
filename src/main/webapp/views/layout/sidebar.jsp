@@ -16,8 +16,8 @@
         <!-- BỔ SUNG KHO LƯU TRỮ HÓA ĐƠN -->
         <a href="${pageContext.request.contextPath}/quan-ly-don-hang" class="menu-item" data-path="/quan-ly-don-hang"><i class="bi bi-receipt-cutoff"></i> <span>Kho Lưu Trữ Hóa Đơn</span></a>
         <!-- CẬP NHẬT ĐƯỜNG DẪN MÁY POS -->
+        <a href="${pageContext.request.contextPath}/nhan-don" class="menu-item"><i class="bi bi-bell"></i> <span>Nhận Đơn (O2O)</span></a>
         <a href="${pageContext.request.contextPath}/pos" class="menu-item text-warning" target="_blank"><i class="bi bi-display"></i> <span>Mở Máy POS</span></a>
-
         <div class="text-uppercase text-white-50 fw-bold small px-3 mb-2 mt-4" style="font-size: 0.7rem; letter-spacing: 1px;">Thực Đơn & Món</div>
         <a href="${pageContext.request.contextPath}/danh-muc" class="menu-item" data-path="/danh-muc"><i class="bi bi-collection-fill"></i> <span>Quản Lý Danh Mục</span></a>
         <a href="${pageContext.request.contextPath}/san-pham" class="menu-item" data-path="/san-pham"><i class="bi bi-cup-hot-fill"></i> <span>Quản Lý Sản Phẩm</span></a>
