@@ -1,0 +1,208 @@
+/* =========================================================
+POS CSS - GIAO DIỆN MÀN HÌNH BÁN HÀNG (CASHIER APP)
+========================================================= */
+:root {
+    --brand: #D97706;
+    --brand-dark: #0F172A;
+}
+/* KHÓA CUỘN TOÀN BỘ TRANG WEB TRÊN TẤT CẢ CÁC THIẾT BỊ */
+body {
+    background-color: #F8FAFC;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    user-select: none;
+    overflow: hidden;
+}
+.navbar {
+    background-color: var(--brand-dark) !important;
+    padding: 0.75rem 1.5rem;
+    z-index: 1030;
+}
+.pos-main-row {
+    height: calc(100vh - 75px);
+    margin-bottom: 0;
+}
+/* ================= CỘT BÊN TRÁI ================= */
+.product-area {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.category-scroll-wrapper {
+    flex-shrink: 0;
+    background-color: #F8FAFC;
+    padding-bottom: 15px;
+}
+.category-scroll {
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+.category-scroll::-webkit-scrollbar {
+    display: none;
+}
+.btn-filter {
+    border-radius: 99px;
+    font-weight: 600;
+    white-space: nowrap;
+    padding: 0.5rem 1.5rem;
+    border: 1px solid #E2E8F0;
+    color: #475569;
+    background: #fff;
+    transition: all 0.2s;
+}
+.btn-filter.active {
+    background-color: var(--brand);
+    color: #fff;
+    border-color: var(--brand);
+    box-shadow: 0 4px 10px rgba(217, 119, 6, 0.3);
+}
+.product-grid-wrapper {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding-bottom: 100px;
+    padding-right: 5px;
+}
+.product-card {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid #E2E8F0;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #fff;
+}
+.product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(217, 119, 6, 0.15) !important;
+    border-color: var(--brand);
+}
+.product-card:active {
+    transform: translateY(2px) scale(0.98);
+    box-shadow: 0 4px 8px rgba(217, 119, 6, 0.1) !important;
+    border-color: var(--brand);
+}
+.product-img {
+    height: 140px;
+    object-fit: cover;
+    width: 100%;
+    transition: transform 0.3s;
+}
+.product-card:hover .product-img {
+    transform: scale(1.05);
+}
+.product-img-wrapper {
+    overflow: hidden;
+    position: relative;
+}
+/* THANH CUỘN CHO VÙNG SẢN PHẨM */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #CBD5E1;
+    border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: #94A3B8;
+}
+/* ================= CỘT BÊN PHẢI (GIỎ HÀNG) ================= */
+.cart-area {
+    height: 100%;
+}
+.cart-wrapper {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    border-radius: 16px;
+    overflow: hidden;
+}
+.cart-items {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    min-height: 200px;
+    background-color: #fff;
+    padding: 0.5rem;
+}
+.topping-list {
+    max-height: 250px;
+    overflow-y: auto;
+}
+/* ================= MÁY IN HÓA ĐƠN ================= */
+.thermal-receipt {
+    background: #fff;
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: 'Courier New', Courier, monospace;
+    color: #000;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border-radius: 4px;
+}
+.thermal-receipt table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.thermal-receipt hr {
+    border-top: 1px dashed #000;
+    opacity: 1;
+    margin: 10px 0;
+    background: none;
+}
+/* ================= NÚT NỔI GIỎ HÀNG (MOBILE) ================= */
+.floating-cart-btn {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 25px rgba(217, 119, 6, 0.5);
+    z-index: 1040;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.floating-cart-btn:active {
+    transform: scale(0.9);
+}
+/* ================= RESPONSIVE ================= */
+@media (min-width: 992px) {
+    .product-grid-wrapper { padding-bottom: 20px; }
+    .cart-area .offcanvas-body { height: 100%; }
+}
+@media (max-width: 991.98px) {
+    #mobileCartOffcanvas { width: 100vw !important; }
+    .cart-area .offcanvas-body {
+        height: auto !important;
+        overflow-y: auto !important;
+        display: block !important;
+        padding-bottom: 30px !important;
+    }
+    .cart-wrapper {
+        height: auto !important;
+        display: block !important;
+        position: static;
+        margin-top: 0;
+        border: none;
+        border-radius: 0;
+        overflow: visible !important;
+    }
+    .cart-items {
+        flex: none !important;
+        height: 40vh !important;
+        min-height: 250px !important;
+        max-height: 400px !important;
+        overflow-y: auto !important;
+        border: 1px solid #E2E8F0;
+        border-radius: 8px;
+        margin-bottom: 15px;
+    }
+    .cart-wrapper .card-footer {
+        padding-bottom: env(safe-area-inset-bottom, 1rem) !important;
+        border-top: none !important;
+    }
+}

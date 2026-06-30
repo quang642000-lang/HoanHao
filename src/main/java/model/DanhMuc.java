@@ -1,0 +1,18 @@
+package model;
+
+public class DanhMuc {
+    private String maDanhMuc;
+    private String tenDanhMuc;
+    private int trangThai;
+
+    public DanhMuc() {}
+
+    public String getMaDanhMuc() { return maDanhMuc; }
+    public void setMaDanhMuc(String maDanhMuc) { this.maDanhMuc = maDanhMuc; }
+
+    public String getTenDanhMuc() { return tenDanhMuc; }
+    public void setTenDanhMuc(String tenDanhMuc) { this.tenDanhMuc = tenDanhMuc; }
+
+    public int getTrangThai() { return trangThai; }
+    public void setTrangThai(int trangThai) { this.trangThai = trangThai; }
+}

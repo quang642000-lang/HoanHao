@@ -1,0 +1,291 @@
+/* =========================================================
+GLOBAL CSS - HỆ THỐNG TEA POS (DÙNG CHO CÁC TRANG QUẢN LÝ)
+========================================================= */
+:root {
+    --brand-primary: #D97706;
+    --brand-dark: #0F172A;
+    --bg-surface: #F8FAFC;
+    --card-radius: 16px;
+}
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background-color: var(--bg-surface);
+    color: #334155;
+}
+/* ================= ĐỊNH DẠNG THẺ CARD CHUNG ================= */
+.card {
+    border-radius: var(--card-radius) !important;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05) !important;
+    border: none !important;
+    background: #fff;
+}
+.card-header,
+.card-header-box {
+    border-top-left-radius: var(--card-radius) !important;
+    border-top-right-radius: var(--card-radius) !important;
+    border-bottom: 1px solid #F1F5F9 !important;
+    padding: 1.25rem 1.5rem;
+    background: #fff;
+}
+/* ================= ĐỊNH DẠNG BẢNG DỮ LIỆU ================= */
+.table-custom th {
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    color: #64748B;
+    background: #F8FAFC;
+    padding: 1rem;
+    border-bottom: none;
+}
+.table-custom td {
+    vertical-align: middle;
+    padding: 1rem;
+    border-bottom: 1px solid #F1F5F9;
+}
+/* ================= ĐỊNH DẠNG NÚT BẤM & FORM ================= */
+.btn {
+    border-radius: 0.5rem;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+.btn:hover {
+    transform: translateY(-1px);
+}
+.btn-brand {
+    background-color: var(--brand-primary);
+    color: white;
+    border: none;
+}
+.btn-brand:hover {
+    background-color: #B45309;
+    color: white;
+}
+.text-brand {
+    color: var(--brand-primary);
+}
+.form-control,
+.form-select {
+    border-radius: 0.5rem;
+    padding: 0.6rem 1rem;
+    border-color: #CBD5E1;
+    font-weight: 500;
+}
+.form-control:focus,
+.form-select:focus {
+    box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.15) !important;
+    border-color: var(--brand-primary) !important;
+}
+/* ================= CÁC TIỆN ÍCH KHÁC ================= */
+.badge {
+    font-weight: 600;
+    padding: 0.4em 0.8em;
+}
+.modal-content {
+    border-radius: var(--card-radius) !important;
+    border: none;
+}
+.product-img {
+    width: 56px;
+    height: 56px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 1px solid #E2E8F0;
+}
+.points-badge {
+    background: linear-gradient(135deg, #F59E0B, #D97706);
+    color: white;
+    box-shadow: 0 2px 4px rgba(217,119,6,0.3);
+}
+/* =========================================================
+TÙY CHỈNH GIAO DIỆN THƯ VIỆN DATATABLES CHO ĐỒNG BỘ
+========================================================= */
+.dataTables_wrapper .row:first-child {
+    padding: 1rem 1.5rem 0.5rem 1.5rem;
+    align-items: center;
+}
+.dataTables_wrapper .row:last-child {
+    padding: 0.5rem 1.5rem 1.5rem 1.5rem;
+    align-items: center;
+}
+.dataTables_wrapper .form-control,
+.dataTables_wrapper .form-select {
+    border-radius: 0.5rem;
+    border-color: #CBD5E1;
+    font-size: 0.9rem;
+    box-shadow: none;
+}
+.dataTables_wrapper .form-control:focus,
+.dataTables_wrapper .form-select:focus {
+    border-color: var(--brand-primary);
+    box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.15);
+}
+.dataTables_wrapper .pagination {
+    margin-bottom: 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    border-radius: 0.5rem;
+}
+.dataTables_wrapper .page-item.active .page-link {
+    background-color: var(--brand-primary) !important;
+    border-color: var(--brand-primary) !important;
+    color: white !important;
+    font-weight: bold;
+}
+.dataTables_wrapper .page-link {
+    color: #475569;
+    font-weight: 500;
+    border: 1px solid #E2E8F0;
+}
+.dataTables_wrapper .page-link:hover {
+    color: var(--brand-primary);
+    background-color: #FFFBEB;
+}
+.dataTables_info {
+    color: #64748B !important;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+/* =========================================================
+CSS ĐỊNH DẠNG SIDEBAR & HEADER DÙNG CHUNG
+========================================================= */
+.wrapper {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+}
+.sidebar {
+    width: 280px;
+    background-color: var(--brand-dark);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease;
+    z-index: 1050;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+}
+.sidebar-header {
+    padding: 24px 20px;
+    text-align: center;
+    background: rgba(0,0,0,0.1);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.sidebar-menu {
+    flex-grow: 1;
+    padding: 15px 10px;
+    overflow-y: auto;
+}
+.sidebar-menu::-webkit-scrollbar {
+    width: 4px;
+}
+.sidebar-menu::-webkit-scrollbar-thumb {
+    background-color: rgba(255,255,255,0.1);
+    border-radius: 4px;
+}
+.menu-item {
+    padding: 12px 16px;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    color: #94A3B8;
+    text-decoration: none;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+.menu-item:hover,
+.menu-item.active {
+    color: #fff;
+    background-color: rgba(255,255,255,0.1);
+    transform: translateX(4px);
+}
+.menu-item i {
+    margin-right: 12px;
+    font-size: 1.2rem;
+    width: 24px;
+    text-align: center;
+}
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.5);
+    z-index: 1040;
+    cursor: pointer;
+}
+.main-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    width: calc(100% - 280px);
+    transition: all 0.3s ease;
+}
+.top-navbar {
+    background-color: #fff;
+    min-height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    flex-wrap: wrap;
+    gap: 15px;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 1030 !important;
+}
+/* ================= TỐI ƯU GIAO DIỆN TRANG DASHBOARD ================= */
+.stat-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.08) !important;
+}
+.filter-form input[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.6;
+}
+.filter-form input[type="date"]::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+}
+/* ================= BẢN SAO HÓA ĐƠN ================= */
+.receipt-view {
+    background-color: #ffffff !important;
+    padding: 24px;
+    font-family: 'Courier New', Courier, monospace;
+    color: #000000;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+.receipt-view hr {
+    border-top: 1px dashed #000;
+    opacity: 1;
+    margin: 10px 0;
+}
+/* ================= RESPONSIVE ================= */
+@media (min-width: 992px) {
+    .sidebar.collapsed { width: 80px; }
+    .sidebar.collapsed .sidebar-header h4 { display: none; }
+    .sidebar.collapsed .menu-item span { display: none; }
+    .sidebar.collapsed .sidebar-menu .text-uppercase { display: none; }
+    .main-content.expanded { width: calc(100% - 80px); }
+}
+@media (max-width: 991.98px) {
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        transform: translateX(-100%);
+        box-shadow: 4px 0 15px rgba(0,0,0,0.2);
+    }
+    .sidebar.show { transform: translateX(0); }
+    .sidebar-overlay.show { display: block; }
+    .main-content { width: 100%; margin-left: 0; }
+    .top-navbar { padding: 10px 15px; }
+}
