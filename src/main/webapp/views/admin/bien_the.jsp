@@ -16,7 +16,6 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css">
 </head>
 <body>
-<%@ include file="../layout/sidebar.jsp" %>
 <div class="wrapper">
     <%@ include file="../layout/sidebar.jsp" %>
     <div class="main-content">
@@ -131,7 +130,7 @@
                                 </tbody>
                             </table>
                             <c:if test="${totalPages > 1}">
-                                <jsp:include page="layout/pagination.jsp"><jsp:param name="baseUrl" value="/bien-the?action=list" /></jsp:include>
+                                <jsp:include page="../layout/pagination.jsp"><jsp:param name="baseUrl" value="/bien-the?action=list" /></jsp:include>
                             </c:if>
                         </div>
                     </div>
@@ -140,7 +139,7 @@
         </div>
     </div>
 </div>
-<%@ include file="layout/confirm_modal.jsp" %>
+<%@ include file="../layout/confirm_modal.jsp" %>
 <!-- MODAL THÊM MỚI CHUẨN ĐỒNG BỘ -->
 <div class="modal fade" id="addModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -242,7 +241,7 @@
         if ($('#bienTheTable tbody td').length > 1) {
             $('#bienTheTable').DataTable({
                 "responsive": true, "paging": false, "searching": false, "info": false, "order": [],
-                "columnDefs": [{ "orderable": false, "targets": [15] }],
+                "columnDefs": [{ "orderable": false, "targets": [1] }],
                 "language": { "emptyTable": "Chưa có dữ liệu." }
             });
         }

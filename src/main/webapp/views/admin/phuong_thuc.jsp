@@ -15,11 +15,11 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css">
 </head>
 <body>
-<%@ include file="../layout/sidebar.jsp" %>
+<%@ include file="../layout/toast.jsp" %>
 <div class="wrapper">
     <%@ include file="../layout/sidebar.jsp" %>
     <div class="main-content">
-        <!-- HEADER CHUẨN ĐỒNG BỘ -->
+        <!-- HEADER -->
         <header class="top-navbar bg-white shadow-sm px-4 py-3 d-flex justify-content-between align-items-center mb-4">
             <div class="d-flex align-items-center">
                 <button class="btn btn-light me-3 border-0 shadow-sm d-lg-none" onclick="toggleSidebar()"><i class="bi bi-list fs-5"></i></button>
@@ -30,7 +30,7 @@
 
         <div class="container-fluid px-4 mb-5">
             <div class="col-12 mb-4">
-                <!-- FORM TÌM KIẾM CHUẨN ĐỒNG BỘ -->
+                <!-- FORM TÌM KIẾM -->
                 <div class="card mb-3 border-0 shadow-sm" style="border-radius: 16px;">
                     <div class="card-body p-3">
                         <form action="${pageContext.request.contextPath}/phuong-thuc" method="get">
@@ -55,7 +55,7 @@
                     </div>
                 </div>
 
-                <!-- BẢNG DỮ LIỆU CHUẨN ĐỒNG BỘ -->
+                <!-- BẢNG DỮ LIỆU -->
                 <div class="card shadow-sm border-0" style="border-radius: 16px;">
                     <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center py-3">
                         <h5 class="mb-0 fw-bold text-dark"><i class="bi bi-wallet2 text-brand me-2"></i>Các Hình Thức Khả Dụng</h5>
@@ -131,7 +131,7 @@
 
 <%@ include file="../layout/confirm_modal.jsp" %>
 
-<!-- MODAL THÊM MỚI CHUẨN ĐỒNG BỘ -->
+<!-- MODAL THÊM MỚI CỔNG THANH TOÁN -->
 <div class="modal fade" id="addModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content shadow-lg border-0" style="border-radius: 16px;">
@@ -159,7 +159,7 @@
     </div>
 </div>
 
-<!-- MODAL SỬA CHUẨN ĐỒNG BỘ -->
+<!-- MODAL SỬA CỔNG THANH TOÁN -->
 <div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content shadow-lg border-0" style="border-radius: 16px;">
@@ -207,7 +207,7 @@
         if ($('#ptttTable tbody td').length > 1) {
             $('#ptttTable').DataTable({
                 "responsive": true, "paging": false, "searching": false, "info": false, "order": [],
-                "columnDefs": [{ "orderable": false, "targets": [12] }],
+                "columnDefs": [{ "orderable": false, "targets": [4] }],
                 "language": { "emptyTable": "Chưa có phương thức thanh toán nào." }
             });
         }

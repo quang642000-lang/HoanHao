@@ -15,7 +15,6 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css">
 </head>
 <body>
-<%@ include file="../layout/sidebar.jsp" %>
 <div class="wrapper">
     <%@ include file="../layout/sidebar.jsp" %>
     <div class="main-content">
@@ -253,7 +252,7 @@
         if ($('#sanPhamTable tbody td').length > 1) {
             $('#sanPhamTable').DataTable({
                 "responsive": true, "paging": false, "searching": false, "info": false, "order": [],
-                "columnDefs": [{ "orderable": false, "targets": [8, 15] }],
+                "columnDefs": [{ "orderable": false, "targets": [1] }],
                 "language": { "emptyTable": "Chưa có dữ liệu." }
             });
         }

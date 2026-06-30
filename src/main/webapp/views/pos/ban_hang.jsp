@@ -16,7 +16,7 @@
 </head>
 <body>
 <input type="hidden" id="appContextPath" value="${pageContext.request.contextPath}">
-<%@ include file="layout/toast.jsp" %>
+<%@ include file="../layout/toast.jsp" %>
 <nav class="navbar navbar-expand-lg navbar-dark shadow-sm sticky-top">
     <div class="container-fluid">
         <a class="navbar-brand fw-bold fs-4 d-flex align-items-center" href="${pageContext.request.contextPath}/ban-hang" style="color: var(--brand-primary);">
@@ -206,7 +206,7 @@
     <i class="bi bi-cart3 fs-3"></i>
     <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-light" id="mobileCartBadge" style="font-size: 0.8rem;">0</span>
 </button>
-<%@ include file="layout/confirm_modal.jsp" %>
+<%@ include file="../layout/confirm_modal.jsp" %>
 <div class="modal fade" id="profileModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content shadow-lg border-0">

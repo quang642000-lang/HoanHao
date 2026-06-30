@@ -15,7 +15,6 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css">
 </head>
 <body>
-<%@ include file="../layout/sidebar.jsp" %>
 <div class="wrapper">
     <%@ include file="../layout/sidebar.jsp" %>
     <div class="main-content">
@@ -182,7 +181,7 @@
         if ($('#danhMucTable tbody td').length > 1) {
             $('#danhMucTable').DataTable({
                 "responsive": true, "paging": false, "searching": false, "info": false, "order": [],
-                "columnDefs": [{ "orderable": false, "targets": [12] }],
+                "columnDefs": [{ "orderable": false, "targets": [2] }],
                 "language": { "emptyTable": "<div class='text-muted py-5'><i class='bi bi-inbox fs-1 d-block mb-3 opacity-50'></i>Chưa có danh mục nào.</div>" }
             });
         }

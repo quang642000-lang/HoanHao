@@ -16,7 +16,6 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css">
 </head>
 <body>
-<%@ include file="../layout/sidebar.jsp" %>
 <div class="wrapper">
     <%@ include file="../layout/sidebar.jsp" %>
     <div class="main-content">
@@ -28,7 +27,6 @@
             </div>
             <div class="d-flex align-items-center"><span class="fw-bold text-dark d-none d-md-block me-3">${sessionScope.nhanVienDangNhap.hoTen}</span></div>
         </header>
-
         <div class="container-fluid px-4 mb-5">
             <div class="col-12 mb-4">
                 <!-- FORM TÌM KIẾM CHUẨN ĐỒNG BỘ -->
@@ -55,7 +53,6 @@
                         </form>
                     </div>
                 </div>
-
                 <!-- BẢNG DỮ LIỆU CHUẨN ĐỒNG BỘ -->
                 <div class="card shadow-sm border-0" style="border-radius: 16px;">
                     <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center py-3">
@@ -133,9 +130,7 @@
         </div>
     </div>
 </div>
-
 <%@ include file="../layout/confirm_modal.jsp" %>
-
 <!-- MODAL THÊM MỚI CHUẨN ĐỒNG BỘ -->
 <div class="modal fade" id="addModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -168,7 +163,6 @@
         </div>
     </div>
 </div>
-
 <!-- MODAL SỬA CHUẨN ĐỒNG BỘ -->
 <div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -210,7 +204,6 @@
         </div>
     </div>
 </div>
-
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="${pageContext.request.contextPath}/assets/js/global.js"></script>
@@ -228,12 +221,11 @@
         let imgUrl = hinhAnh ? ('${pageContext.request.contextPath}/image/' + hinhAnh) : 'https://placehold.co/100x100?text=No+Image';
         document.getElementById('preview_hinhAnh').src = imgUrl;
     }
-
     $(document).ready(function() {
         if ($('#toppingTable tbody td').length > 1) {
             $('#toppingTable').DataTable({
                 "responsive": true, "paging": false, "searching": false, "info": false, "order": [],
-                "columnDefs": [{ "orderable": false, "targets": [7, 8] }],
+                "columnDefs": [{ "orderable": false, "targets": [1] }],
                 "language": { "emptyTable": "Chưa có Topping nào." }
             });
         }
