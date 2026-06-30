@@ -16,40 +16,36 @@ public class DonHangRepoImpl implements IDonHangRepository {
     @Override
     public boolean taoDonHang(DonHang dh, int diemSuDung, int diemCongThem) throws SQLException {
         String maDHMoi = "";
+        String checkKhuyenMai = "SELECT so_luong, (SELECT COUNT(*) FROM DON_HANG WHERE ma_km = ?) as so_luong_da_dung FROM CHUONG_TRINH_KHUYEN_MAI WITH (UPDLOCK, ROWLOCK) WHERE ma_km = ?";
 
-        // Dùng UPDLOCK, ROWLOCK khóa cứng dòng Mã Khuyến Mãi để tránh bị 2 nhân viên dùng cùng 1 lúc
-        String checkKhuyenMai = "SELECT so_luong, (SELECT COUNT(*) FROM DON_HANG WHERE ma_km = ?) as so_luong_da_dung " +
-                "FROM CHUONG_TRINH_KHUYEN_MAI WITH (UPDLOCK, ROWLOCK) WHERE ma_km = ?";
+        // FIX CHÍ MẠNG: Bổ sung thêm biến lấy trạng thái và loại đơn hàng linh động
+        String trangThai = (dh.getTrangThaiDon() != null && !dh.getTrangThaiDon().isEmpty()) ? dh.getTrangThaiDon() : "Hoàn thành";
+        String loaiDH = (dh.getLoaiDH() != null && !dh.getLoaiDH().isEmpty()) ? dh.getLoaiDH() : "POS";
 
-        // Lệnh OUTPUT INSERTED giúp lấy ngay mã Tự sinh (Mã Đơn và Mã Chi tiết) để chèn xuống bảng con
-        String sqlDH = "INSERT INTO DON_HANG (tong_tien_hang, tien_giam_gia, tong_phai_tra, diem_su_dung, tien_tru_diem, tien_khach_dua, trang_thai_don, thoi_gian_tt, ma_nv, ma_kh, ma_km, ma_pt) " +
-                "OUTPUT INSERTED.ma_dh VALUES (?, ?, ?, ?, ?, ?, N'Hoàn thành', GETDATE(), ?, ?, ?, ?)";
+        String sqlDH = "INSERT INTO DON_HANG (tong_tien_hang, tien_giam_gia, tong_phai_tra, diem_su_dung, tien_tru_diem, tien_khach_dua, trang_thai_don, loai_dh, thoi_gian_tt, ma_nv, ma_kh, ma_km, ma_pt) " +
+                "OUTPUT INSERTED.ma_dh VALUES (?, ?, ?, ?, ?, ?, ?, ?, GETDATE(), ?, ?, ?, ?)";
 
         String sqlCT = "INSERT INTO CHI_TIET_DON_HANG (so_luong, muc_duong, muc_da, ghi_chu, gia_chot_mon, ma_dh, ma_bt) " +
                 "OUTPUT INSERTED.ma_ctdh VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         String sqlTopping = "INSERT INTO CHI_TIET_TOPPING (so_luong_tp, gia_chot_tp, ma_ctdh, ma_tp) VALUES (?, ?, ?, ?)";
-
         String updateDiem = "UPDATE KHACH_HANG SET diem_tich_luy = diem_tich_luy - ? + ? WHERE ma_kh = ?";
 
         try (Connection con = DBConnect.getConnection()) {
-            // BẮT ĐẦU TRANSACTION: Cấm tự động lưu. Lỗi 1 dòng là hủy toàn bộ!
             con.setAutoCommit(false);
             try {
-                // 1. CHỐNG RACE CONDITION VOUCHER
                 if (dh.getKhuyenMai() != null && dh.getKhuyenMai().getMaKM() != null && !dh.getKhuyenMai().getMaKM().isEmpty()) {
                     try (PreparedStatement psCheck = con.prepareStatement(checkKhuyenMai)) {
                         psCheck.setString(1, dh.getKhuyenMai().getMaKM());
                         psCheck.setString(2, dh.getKhuyenMai().getMaKM());
                         try (ResultSet rs = psCheck.executeQuery()) {
                             if (rs.next() && rs.getInt("so_luong_da_dung") >= rs.getInt("so_luong")) {
-                                throw new SQLException("Mã khuyến mãi đã bị khách khác sử dụng hết trong tích tắc!");
+                                throw new SQLException("Mã khuyến mãi đã hết lượt sử dụng!");
                             }
                         }
                     }
                 }
 
-                // 2. TẠO HÓA ĐƠN CHÍNH
                 try (PreparedStatement psDH = con.prepareStatement(sqlDH)) {
                     psDH.setInt(1, dh.getTongTienHang());
                     psDH.setInt(2, dh.getTienGiamGia());
@@ -57,21 +53,30 @@ public class DonHangRepoImpl implements IDonHangRepository {
                     psDH.setInt(4, diemSuDung);
                     psDH.setInt(5, dh.getTienTruDiem());
                     psDH.setInt(6, dh.getTienKhachDua());
-                    psDH.setString(7, dh.getNhanVien().getMaNV());
+                    psDH.setString(7, trangThai);
+                    psDH.setString(8, loaiDH);
 
-                    if (dh.getKhachHang() != null && dh.getKhachHang().getMaKH() != null) {
-                        psDH.setString(8, dh.getKhachHang().getMaKH());
-                    } else {
-                        psDH.setNull(8, java.sql.Types.VARCHAR);
-                    }
-
-                    if (dh.getKhuyenMai() != null && dh.getKhuyenMai().getMaKM() != null && !dh.getKhuyenMai().getMaKM().isEmpty()) {
-                        psDH.setString(9, dh.getKhuyenMai().getMaKM());
+                    // FIX CHÍ MẠNG: Kiểm tra cực kỳ cẩn thận nếu NhanVien bị Null (Đơn O2O)
+                    if (dh.getNhanVien() != null && dh.getNhanVien().getMaNV() != null && !dh.getNhanVien().getMaNV().isEmpty()) {
+                        psDH.setString(9, dh.getNhanVien().getMaNV());
                     } else {
                         psDH.setNull(9, java.sql.Types.VARCHAR);
                     }
 
-                    psDH.setString(10, dh.getPhuongThucThanhToan().getMaPTTT());
+                    if (dh.getKhachHang() != null && dh.getKhachHang().getMaKH() != null) {
+                        psDH.setString(10, dh.getKhachHang().getMaKH());
+                    } else {
+                        psDH.setNull(10, java.sql.Types.VARCHAR);
+                    }
+
+                    if (dh.getKhuyenMai() != null && dh.getKhuyenMai().getMaKM() != null && !dh.getKhuyenMai().getMaKM().isEmpty()) {
+                        psDH.setString(11, dh.getKhuyenMai().getMaKM());
+                    } else {
+                        psDH.setNull(11, java.sql.Types.VARCHAR);
+                    }
+
+                    psDH.setString(12, dh.getPhuongThucThanhToan().getMaPTTT());
+
                     try (ResultSet rsDH = psDH.executeQuery()) {
                         if (rsDH.next()) {
                             maDHMoi = rsDH.getString("ma_dh");
@@ -79,12 +84,11 @@ public class DonHangRepoImpl implements IDonHangRepository {
                         }
                     }
                 }
-                if (maDHMoi == null || maDHMoi.isEmpty()) throw new SQLException("Lỗi sinh mã hóa đơn từ Database!");
 
-                // 3. TẠO CHI TIẾT ĐƠN VÀ CHI TIẾT TOPPING
+                if (maDHMoi == null || maDHMoi.isEmpty()) throw new SQLException("Lỗi sinh mã hóa đơn!");
+
                 try (PreparedStatement psCT = con.prepareStatement(sqlCT);
                      PreparedStatement psTopping = con.prepareStatement(sqlTopping)) {
-
                     for (ChiTietDonHang ct : dh.getDanhSachChiTiet()) {
                         psCT.setInt(1, ct.getSoLuong());
                         psCT.setString(2, ct.getMucDuong());
@@ -98,7 +102,6 @@ public class DonHangRepoImpl implements IDonHangRepository {
                         try (ResultSet rsCT = psCT.executeQuery()) {
                             if (rsCT.next()) maCTMoi = rsCT.getString("ma_ctdh");
                         }
-
                         for (ChiTietTopping ctt : ct.getDanhSachTopping()) {
                             psTopping.setInt(1, ctt.getSoLuongTp());
                             psTopping.setInt(2, ctt.getGiaChotTp());
@@ -109,7 +112,6 @@ public class DonHangRepoImpl implements IDonHangRepository {
                     }
                 }
 
-                // 4. TRỪ/CỘNG ĐIỂM HỘI VIÊN
                 if (dh.getKhachHang() != null && dh.getKhachHang().getMaKH() != null) {
                     try (PreparedStatement psDiem = con.prepareStatement(updateDiem)) {
                         psDiem.setInt(1, diemSuDung);
@@ -118,12 +120,10 @@ public class DonHangRepoImpl implements IDonHangRepository {
                         psDiem.executeUpdate();
                     }
                 }
-
-                con.commit(); // TẤT CẢ OK -> CHỐT DỮ LIỆU
+                con.commit();
                 return true;
-
             } catch (SQLException e) {
-                con.rollback(); // NẾU LỖI 1 LỆNH NHỎ -> XÓA SẠCH VÀ LÀM LẠI
+                con.rollback();
                 throw e;
             }
         }

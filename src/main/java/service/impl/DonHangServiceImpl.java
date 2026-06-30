@@ -127,11 +127,14 @@ public class DonHangServiceImpl implements IDonHangService {
             dh.setTongPhaiTra(tongPhaiTra);
             dh.setThoiGianTao(now);
 
-            if (dh.getTienKhachDua() < dh.getTongPhaiTra()) return "Lỗi: Số tiền khách đưa không đủ!";
-            if (dh.getDanhSachChiTiet() == null || dh.getDanhSachChiTiet().isEmpty()) return "Lỗi: Giỏ hàng trống!";
+            if (!"O2O_PORTAL".equals(dh.getLoaiDH()) && dh.getTienKhachDua() < dh.getTongPhaiTra()) {
+                return "Lỗi: Số tiền khách đưa không đủ!";
+            }
+            if (dh.getDanhSachChiTiet() == null || dh.getDanhSachChiTiet().isEmpty()) {
+                return "Lỗi: Giỏ hàng trống!";
+            }
 
             diemCongThem = tongPhaiTra / 10000;
-
             // 5. GỌI REPOSITORY TRANSACTION
             boolean ketQua = donHangRepo.taoDonHang(dh, diemSuDung, diemCongThem);
             if (ketQua) {

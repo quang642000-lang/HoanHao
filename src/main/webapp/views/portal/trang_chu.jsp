@@ -108,7 +108,7 @@
     </div>
 </div>
 
-<!-- MODAL ĐẶT MÓN O2O (CHỌN SIZE ĐÁ ĐƯỜNG) -->
+<!-- MODAL ĐẶT MÓN O2O (CÓ CHỨC NĂNG CHỌN TOPPING) -->
 <div class="modal fade" id="o2oModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content border-0 shadow-lg rounded-4">
@@ -136,9 +136,29 @@
                         </select>
                     </div>
                 </div>
+
+                <!-- DANH SÁCH TOPPING TRONG O2O -->
+                <label class="fw-bold small text-muted mb-2 mt-2">Topping Thêm</label>
+                <div class="bg-light rounded-3 p-2 border" style="max-height: 200px; overflow-y: auto;">
+                    <c:forEach var="tp" items="${requestScope.danhSachTopping}">
+                        <c:if test="${tp.trangThai == 1}">
+                            <div class="d-flex justify-content-between align-items-center p-2 mb-1 bg-white rounded shadow-sm border">
+                                <div class="fw-bold text-dark small">${tp.tenTopping} <br><span class="text-danger">+${tp.giaBan}đ</span></div>
+                                <div class="input-group input-group-sm" style="width: 90px;">
+                                    <button class="btn btn-outline-secondary" type="button" onclick="changeO2OTpQty('${tp.maTopping}', -1)">-</button>
+                                    <input type="text" class="form-control text-center fw-bold bg-white"
+                                           id="o2o_tp_qty_${tp.maTopping}" value="0" readonly
+                                           data-id="${tp.maTopping}" data-name="${fn:escapeXml(tp.tenTopping)}" data-price="${tp.giaBan}">
+                                    <button class="btn btn-outline-secondary" type="button" onclick="changeO2OTpQty('${tp.maTopping}', 1)">+</button>
+                                </div>
+                            </div>
+                        </c:if>
+                    </c:forEach>
+                </div>
+
             </div>
             <div class="modal-footer bg-light p-3">
-                <button type="button" class="btn btn-warning w-100 fw-bold rounded-pill py-2 text-dark" onclick="addO2OToCart()">Xác Nhận Đưa Vào Giỏ</button>
+                <button type="button" class="btn btn-warning w-100 fw-bold rounded-pill py-3 shadow-sm text-dark fs-5" onclick="addO2OToCart()"><i class="bi bi-cart-plus"></i> Đưa Vào Giỏ</button>
             </div>
         </div>
     </div>
@@ -161,7 +181,7 @@
                     <button class="btn btn-primary w-100 fw-bold rounded-pill py-3 shadow-sm" onclick="checkPortalPhone()" id="btnCheckPhone">Tiếp Tục <i class="bi bi-arrow-right ms-1"></i></button>
                 </div>
 
-                <!-- BƯỚC 2A: LOGIN BÌNH THƯỜNG (DÀNH CHO KHÁCH CŨ ĐÃ CÓ MẬT KHẨU) -->
+                <!-- BƯỚC 2A: LOGIN BÌNH THƯỜNG -->
                 <div id="step-login" style="display: none;">
                     <p class="small text-muted fw-bold mb-3">Tài khoản: <span id="lblLoginPhone" class="text-primary fs-6"></span> <a href="javascript:resetAuthUI()" class="text-danger ms-2 text-decoration-none">Đổi</a></p>
                     <label class="form-label fw-bold small text-muted text-uppercase">Mật Khẩu Web</label>
@@ -169,7 +189,7 @@
                     <button class="btn btn-success w-100 fw-bold rounded-pill py-3 shadow-sm" onclick="portalLogin()" id="btnLogin">Đăng Nhập <i class="bi bi-box-arrow-in-right ms-1"></i></button>
                 </div>
 
-                <!-- BƯỚC 2B: XÁC MINH OTP (DÀNH CHO KHÁCH ĐƯỢC TẠO THẺ Ở MÁY POS) -->
+                <!-- BƯỚC 2B: XÁC MINH OTP (KHÁCH TỪ QUẦY POS) -->
                 <div id="step-otp" style="display: none;">
                     <div class="alert alert-warning border-0 small mb-3">
                         <i class="bi bi-info-circle-fill"></i> Thẻ của bạn được mở tại quầy. Hệ thống đã gửi mã OTP kích hoạt Web đến Email:<br>
@@ -181,7 +201,7 @@
                     <div class="text-center mt-3"><a href="javascript:resetAuthUI()" class="text-muted small text-decoration-none"><i class="bi bi-arrow-left"></i> Quay lại</a></div>
                 </div>
 
-                <!-- BƯỚC 2C: ĐĂNG KÝ (DÀNH CHO KHÁCH MỚI HOÀN TOÀN) -->
+                <!-- BƯỚC 2C: ĐĂNG KÝ (KHÁCH MỚI HOÀN TOÀN) -->
                 <div id="step-register" style="display: none;">
                     <p class="small text-muted fw-bold mb-3">SĐT <span id="lblRegPhone" class="text-primary"></span> chưa đăng ký. Hãy mở thẻ mới:</p>
                     <input type="text" class="form-control mb-2 fw-medium" id="regName" placeholder="Họ và Tên bạn">
@@ -249,7 +269,16 @@
                              <label class='btn btn-outline-warning text-dark fw-bold rounded-3 px-3 py-2' for='s_\${v.maBT}'>Size \${v.size} - \${v.price}đ</label>`;
         });
         document.getElementById('sizeContainer').innerHTML = sizeHtml;
+        document.querySelectorAll('input[id^="o2o_tp_qty_"]').forEach(function(inp) { inp.value = 0; });
+
         o2oModal.show();
+    }
+
+    // Thay đổi số lượng topping O2O
+    function changeO2OTpQty(id, amount) {
+        let input = document.getElementById('o2o_tp_qty_' + id);
+        let val = parseInt(input.value) + amount;
+        if(val >= 0) input.value = val;
     }
 
     function addO2OToCart() {
@@ -257,13 +286,27 @@
         let maBT = document.querySelector('input[name="o2oSize"]:checked').value;
         let daDuong = document.getElementById('o2oDa').value + " Đá, " + document.getElementById('o2oDuong').value + " Đường";
 
-        // Xây dựng JSON đẩy về API (Topping O2O sẽ được phát triển tiếp ở module sau)
+        // THU THẬP TOPPING JSON
+        let toppings = [];
+        document.querySelectorAll('input[id^="o2o_tp_qty_"]').forEach(inp => {
+            let qty = parseInt(inp.value);
+            if (qty > 0) {
+                toppings.push({
+                    id: inp.getAttribute('data-id'),
+                    name: inp.getAttribute('data-name'),
+                    price: parseInt(inp.getAttribute('data-price')),
+                    qty: qty
+                });
+            }
+        });
+
+        // Xây dựng JSON đẩy về API
         let payload = {
             maKH: maKH,
             maBT: maBT,
             soLuong: 1,
             mucDaDuong: daDuong,
-            toppingsJson: "[]"
+            toppingsJson: JSON.stringify(toppings)
         };
 
         fetch(appContext + '/api/portal/cart', {
@@ -297,7 +340,6 @@
         document.getElementById('authNewPass').value = '';
     }
 
-    // Bước 1: Gửi SĐT về Backend để Backend quyết định luồng đi
     function checkPortalPhone() {
         let phone = document.getElementById('authPhone').value;
         if(phone.length < 10) { alert('Số điện thoại không hợp lệ!'); return; }
@@ -309,23 +351,20 @@
         fetch(authApiUrl, {
             method: 'POST',
             headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-            body: 'action=check-phone&phone=' + phone
+            body: 'action=check-phone&phone=' + encodeURIComponent(phone)
         }).then(res => res.json()).then(data => {
             btn.innerHTML = 'Tiếp Tục <i class="bi bi-arrow-right ms-1"></i>';
             btn.disabled = false;
 
             if(data.status === 'has_pass') {
-                // Khách đã có Password -> Chuyển sang form Login thường
                 document.getElementById('step-phone').style.display = 'none';
                 document.getElementById('step-login').style.display = 'block';
                 document.getElementById('lblLoginPhone').innerText = phone;
             } else if(data.status === 'no_pass') {
-                // Khách mở thẻ ở POS nhưng chưa có Pass -> Chuyển sang OTP Kích hoạt
                 document.getElementById('step-phone').style.display = 'none';
                 document.getElementById('step-otp').style.display = 'block';
                 document.getElementById('lblOtpEmail').innerText = data.email;
             } else if(data.status === 'not_found') {
-                // Khách mới toanh -> Chuyển sang form Đăng Ký
                 document.getElementById('step-phone').style.display = 'none';
                 document.getElementById('step-register').style.display = 'block';
                 document.getElementById('lblRegPhone').innerText = phone;
@@ -335,7 +374,6 @@
         });
     }
 
-    // Chạy Luồng 1: Đăng nhập
     function portalLogin() {
         let phone = document.getElementById('authPhone').value;
         let pass = document.getElementById('authPass').value;
@@ -344,14 +382,13 @@
         fetch(authApiUrl, {
             method: 'POST',
             headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-            body: `action=login&phone=\${phone}&password=\${pass}`
+            body: `action=login&phone=\${encodeURIComponent(phone)}&password=\${encodeURIComponent(pass)}`
         }).then(res => res.json()).then(data => {
             if(data.status === 'success') window.location.reload();
             else alert(data.message);
         });
     }
 
-    // Chạy Luồng 2: Xác thực OTP để thiết lập Pass lần đầu
     function verifyAndSetPass() {
         let otp = document.getElementById('authOtp').value;
         let pass = document.getElementById('authNewPass').value;
@@ -360,14 +397,13 @@
         fetch(authApiUrl, {
             method: 'POST',
             headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-            body: `action=verify-set-pass&otp=\${otp}&password=\${pass}`
+            body: `action=verify-set-pass&otp=\${encodeURIComponent(otp)}&password=\${encodeURIComponent(pass)}`
         }).then(res => res.json()).then(data => {
             if(data.status === 'success') window.location.reload();
             else alert(data.message);
         });
     }
 
-    // Chạy Luồng 3: Đăng ký tạo thẻ hoàn toàn mới
     function portalRegister() {
         let phone = document.getElementById('authPhone').value;
         let name = document.getElementById('regName').value;
@@ -375,10 +411,12 @@
         let pass = document.getElementById('regPass').value;
         if(!name || !email || !pass) { alert('Vui lòng điền đầy đủ thông tin để khởi tạo thẻ!'); return; }
 
+        let payload = `action=register&phone=\${encodeURIComponent(phone)}&name=\${encodeURIComponent(name)}&email=\${encodeURIComponent(email)}&password=\${encodeURIComponent(pass)}`;
+
         fetch(authApiUrl, {
             method: 'POST',
             headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-            body: `action=register&phone=\${phone}&name=\${name}&email=\${email}&password=\${pass}`
+            body: payload
         }).then(res => res.json()).then(data => {
             if(data.status === 'success') window.location.reload();
             else alert(data.message);

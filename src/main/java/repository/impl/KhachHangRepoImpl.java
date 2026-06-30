@@ -7,10 +7,24 @@ import repository.IKhachHangRepository;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
 public class KhachHangRepoImpl implements IKhachHangRepository {
+
+    // KỸ THUẬT AUTO-MIGRATE: Tự động vá lỗi CSDL khi Server khởi động
+    static {
+        try (Connection con = DBConnect.getConnection();
+             Statement st = con.createStatement()) {
+            st.execute("IF EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID('KHACH_HANG') AND name = 'ten_khach_hang') BEGIN EXEC sp_rename 'KHACH_HANG.ten_khach_hang', 'ten_kh', 'COLUMN' END");
+            st.execute("IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID('KHACH_HANG') AND name = 'email') BEGIN ALTER TABLE KHACH_HANG ADD email VARCHAR(100) NULL END");
+            st.execute("IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID('KHACH_HANG') AND name = 'mat_khau') BEGIN ALTER TABLE KHACH_HANG ADD mat_khau VARCHAR(255) NULL END");
+            st.execute("IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID('KHACH_HANG') AND name = 'ma_pin') BEGIN ALTER TABLE KHACH_HANG ADD ma_pin VARCHAR(255) NULL END");
+        } catch (Exception e) {
+            System.err.println("Cảnh báo Auto-Migrate: " + e.getMessage());
+        }
+    }
 
     @Override
     public List<KhachHang> getAll() {
@@ -25,7 +39,7 @@ public class KhachHangRepoImpl implements IKhachHangRepository {
                 kh.setTenKH(rs.getString("ten_kh"));
                 kh.setSDT(rs.getString("so_dien_thoai"));
                 kh.setDiemTichLuy(rs.getInt("diem_tich_luy"));
-                kh.setEmail(rs.getString("email")); // FIX: Đọc Email
+                kh.setEmail(rs.getString("email"));
                 list.add(kh);
             }
         } catch (Exception e) { e.printStackTrace(); }
@@ -47,7 +61,7 @@ public class KhachHangRepoImpl implements IKhachHangRepository {
                     kh.setTenKH(rs.getString("ten_kh"));
                     kh.setSDT(rs.getString("so_dien_thoai"));
                     kh.setDiemTichLuy(rs.getInt("diem_tich_luy"));
-                    kh.setEmail(rs.getString("email")); // FIX: Đọc Email
+                    kh.setEmail(rs.getString("email"));
                     list.add(kh);
                 }
             }
@@ -79,7 +93,6 @@ public class KhachHangRepoImpl implements IKhachHangRepository {
                     kh.setTenKH(rs.getString("ten_kh"));
                     kh.setSDT(rs.getString("so_dien_thoai"));
                     kh.setDiemTichLuy(rs.getInt("diem_tich_luy"));
-                    // FIX CHÍ MẠNG: Phải đọc Email và Mật khẩu từ Database lên
                     kh.setEmail(rs.getString("email"));
                     kh.setMatKhau(rs.getString("mat_khau"));
                     kh.setHangThanhVien(rs.getString("hang_thanh_vien"));
@@ -91,8 +104,7 @@ public class KhachHangRepoImpl implements IKhachHangRepository {
     }
 
     @Override
-    public boolean add(KhachHang kh) {
-        // FIX CHÍ MẠNG: Bổ sung email và mat_khau vào câu lệnh INSERT
+    public String add(KhachHang kh) {
         String sql = "INSERT INTO KHACH_HANG (ten_kh, so_dien_thoai, email, mat_khau, diem_tich_luy) VALUES (?, ?, ?, ?, ?)";
         try (Connection con = DBConnect.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -101,16 +113,17 @@ public class KhachHangRepoImpl implements IKhachHangRepository {
             ps.setString(3, kh.getEmail());
             ps.setString(4, kh.getMatKhau());
             ps.setInt(5, kh.getDiemTichLuy());
-            return ps.executeUpdate() > 0;
+            int rowAffected = ps.executeUpdate();
+            return rowAffected > 0 ? "SUCCESS" : "Lỗi: Dữ liệu không được ghi vào CSDL";
         } catch (Exception e) {
             e.printStackTrace();
+            // Ném thẳng câu lỗi SQL Server lên Frontend để xem bệnh thật sự
+            return "LỖI SQL: " + e.getMessage();
         }
-        return false;
     }
 
     @Override
     public boolean update(KhachHang kh) {
-        // Có thể bổ sung update Email nếu nghiệp vụ yêu cầu
         String sql = "UPDATE KHACH_HANG SET ten_kh = ?, so_dien_thoai = ? WHERE ma_kh = ?";
         try (Connection con = DBConnect.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {

@@ -1,6 +1,5 @@
 package repository.impl;
 
-
 import model.GioHang;
 import model.ChiTietGioHang;
 import model.KhachHang;
@@ -8,6 +7,7 @@ import model.BienTheSanPham;
 import model.SanPham;
 import repository.DBConnect;
 import repository.IGioHangRepository;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -29,7 +29,6 @@ public class GioHangRepoImpl implements IGioHangRepository {
                     KhachHang kh = new KhachHang(); kh.setMaKH(maKH);
                     gh.setKhachHang(kh);
 
-                    // Lấy chi tiết giỏ hàng
                     String sqlCT = "SELECT ct.*, bt.kich_co, bt.gia_ban, sp.ten_sp, sp.hinh_anh FROM CHI_TIET_GIO_HANG ct " +
                             "JOIN BIEN_THE_SAN_PHAM bt ON ct.ma_bt = bt.ma_bt " +
                             "JOIN SAN_PHAM sp ON bt.ma_sp = sp.ma_sp WHERE ct.ma_gh = ?";
@@ -60,16 +59,30 @@ public class GioHangRepoImpl implements IGioHangRepository {
                     }
                 }
             }
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return gh;
     }
 
     @Override
+    public boolean createCart(String maKH) {
+        String sql = "INSERT INTO GIO_HANG (ma_kh) VALUES (?)";
+        try (Connection con = DBConnect.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, maKH);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            // Ném thẳng lỗi DB ra ngoài
+            throw new RuntimeException("Lỗi tạo Giỏ Hàng trong SQL: " + e.getMessage());
+        }
+    }
+
+    @Override
     public boolean upsertCartItem(String maGH, String maBT, int soLuong, String mucDaDuong, String toppingsJson) {
-        // Logic gộp món bằng chuỗi Toppings JSON
-        String checkSql = "SELECT ma_ctgh, so_luong FROM CHI_TIET_GIO_HANG WHERE ma_gh = ? AND ma_bt = ? AND ISNULL(muc_da_duong,'') = ? AND ISNULL(toppings_json,'') = ?";
+        String checkSql = "SELECT ma_ctgh, so_luong FROM CHI_TIET_GIO_HANG WHERE ma_gh = ? AND ma_bt = ? AND ISNULL(muc_da_duong,'') = ? AND ISNULL(CAST(toppings_json AS NVARCHAR(4000)),'') = ?";
         try (Connection con = DBConnect.getConnection(); PreparedStatement psCheck = con.prepareStatement(checkSql)) {
-            psCheck.setString(1, maGH); psCheck.setString(2, maBT);
+            psCheck.setString(1, maGH);
+            psCheck.setString(2, maBT);
             psCheck.setString(3, mucDaDuong == null ? "" : mucDaDuong);
             psCheck.setString(4, toppingsJson == null ? "" : toppingsJson);
 
@@ -77,25 +90,35 @@ public class GioHangRepoImpl implements IGioHangRepository {
                 if (rs.next()) {
                     String updateSql = "UPDATE CHI_TIET_GIO_HANG SET so_luong = so_luong + ? WHERE ma_ctgh = ?";
                     try (PreparedStatement psUp = con.prepareStatement(updateSql)) {
-                        psUp.setInt(1, soLuong); psUp.setString(2, rs.getString("ma_ctgh"));
+                        psUp.setInt(1, soLuong);
+                        psUp.setString(2, rs.getString("ma_ctgh"));
                         return psUp.executeUpdate() > 0;
                     }
                 } else {
                     String insertSql = "INSERT INTO CHI_TIET_GIO_HANG (ma_gh, ma_bt, so_luong, muc_da_duong, toppings_json) VALUES (?, ?, ?, ?, ?)";
                     try (PreparedStatement psIn = con.prepareStatement(insertSql)) {
-                        psIn.setString(1, maGH); psIn.setString(2, maBT); psIn.setInt(3, soLuong);
-                        psIn.setString(4, mucDaDuong); psIn.setString(5, toppingsJson);
+                        psIn.setString(1, maGH);
+                        psIn.setString(2, maBT);
+                        psIn.setInt(3, soLuong);
+                        psIn.setString(4, mucDaDuong);
+                        psIn.setString(5, toppingsJson);
                         return psIn.executeUpdate() > 0;
                     }
                 }
             }
-        } catch (Exception e) { e.printStackTrace(); } return false;
+        } catch (Exception e) {
+            throw new RuntimeException("Lỗi Thêm Món vào DB: " + e.getMessage());
+        }
     }
 
     @Override
     public boolean clearCart(String maGH) {
         try (Connection con = DBConnect.getConnection(); PreparedStatement ps = con.prepareStatement("DELETE FROM CHI_TIET_GIO_HANG WHERE ma_gh = ?")) {
-            ps.setString(1, maGH); return ps.executeUpdate() > 0;
-        } catch (Exception e) { e.printStackTrace(); } return false;
+            ps.setString(1, maGH);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

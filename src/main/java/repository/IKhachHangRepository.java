@@ -8,7 +8,9 @@ public interface IKhachHangRepository {
     List<KhachHang> getAll(int offset, int limit);
     int getTotalCount();
     KhachHang timKiemTheoSdt(String sdt);
-    boolean add(KhachHang kh);
+
+    String add(KhachHang kh); // ĐÃ ĐỔI TỪ BOOLEAN SANG STRING
+
     boolean update(KhachHang kh);
     boolean delete(String maKH);
     boolean congDiemTichLuy(String maKh, int diemCongThem);
